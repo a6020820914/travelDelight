@@ -21,5 +21,5 @@ def main():
 if __name__ == "__main__":
     main()
 
-#    python main.py runserver
+#    python manage.py runserver
 #     source venv/bin/activate

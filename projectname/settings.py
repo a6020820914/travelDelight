@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import dj_database_url
 
-
 # 奕誠
 AUTH_USER_MODEL = 'members.Member'
 
@@ -10,10 +9,10 @@ AUTH_USER_MODEL = 'members.Member'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 快速開發設置，這些設置不適合用於生產環境
-SECRET_KEY = "django-insecure-18p*)w2q+_7p*o8@@8+14y1erm__6+@a#$@c8%h1@j93z#06@8"
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', "django-insecure-18p*)w2q+_7p*o8@@8+14y1erm__6+@a#$@c8%h1@j93z#06@8")
 
 # 注意：生產環境中不要啟用 debug 模式
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -66,8 +65,6 @@ TEMPLATES = [
 # WSGI 應用程式
 WSGI_APPLICATION = 'projectname.wsgi.application'
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 # 默认数据库为 SQLite
 DATABASES = {
     'default': {
@@ -79,6 +76,7 @@ DATABASES = {
 # 只在环境变量存在且非 SQLite 时使用 dj_database_url
 if 'DATABASE_URL' in os.environ and not os.environ['DATABASE_URL'].startswith('sqlite:///'):
     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
 # 密碼驗證
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -106,8 +104,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-# 你需要收集静态文件的目录
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 这里的 'staticfiles' 是你收集静态文件的目标目录
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # 媒體文件設置
 MEDIA_URL = '/media/'
@@ -121,8 +118,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'a6020820914@gmail.com'
-EMAIL_HOST_PASSWORD = 'myef kcph eyil qppk'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'a6020820914@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'myef kcph eyil qppk')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Jazzmin 设置
@@ -177,13 +174,3 @@ LANGUAGES = [
     ('en', 'English'),
     ('zh-hant', 'Traditional Chinese'),
 ]
-
-# 第三方登入功能（如需使用，请取消注释）
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )
-# SITE_ID = 1
-# LOGIN_REDIRECT_URL = '/'  # 登入後重定向路徑
-# ACCOUNT_EMAIL_VERIFICATION = 'none'
-# ACCOUNT_EMAIL_REQUIRED = True
