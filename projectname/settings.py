@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import dj_database_url
+
 
 # 奕誠
 AUTH_USER_MODEL = 'members.Member'
@@ -15,19 +17,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # 應用程式定義
 INSTALLED_APPS = [
-    # 'books',
     'widget_tweaks',
-    # 如需啟用第三方登入，請取消以下註釋
-    # 'django.contrib.sites',  
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google',  # Google 登入
-    # 'allauth.socialaccount.providers.facebook',
-
     'jazzmin',  # Django Admin 美化介面
     'django_extensions',
     'members',  # 自定義會員系統
@@ -39,16 +31,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# 中間件定義
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise 处理静态文件
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # 确保这一行在前
     'django.middleware.locale.LocaleMiddleware',  # 語言中間件需放在這裏
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # 认证中间件
+    'django.contrib.messages.middleware.MessageMiddleware',  # 消息中间件
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # 防止点击劫持
 ]
 
 # URL 配置
@@ -74,7 +66,9 @@ TEMPLATES = [
 # WSGI 應用程式
 WSGI_APPLICATION = 'projectname.wsgi.application'
 
-# 資料庫設置
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 默认数据库为 SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -82,6 +76,9 @@ DATABASES = {
     }
 }
 
+# 只在环境变量存在且非 SQLite 时使用 dj_database_url
+if 'DATABASE_URL' in os.environ and not os.environ['DATABASE_URL'].startswith('sqlite:///'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 # 密碼驗證
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -128,6 +125,7 @@ EMAIL_HOST_USER = 'a6020820914@gmail.com'
 EMAIL_HOST_PASSWORD = 'myef kcph eyil qppk'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Jazzmin 设置
 JAZZMIN_SETTINGS = {
     'site_title': 'Library Admin',
     'site_header': 'Library',
@@ -136,7 +134,7 @@ JAZZMIN_SETTINGS = {
     'site_logo_classes': 'img-responsive logo-custom-size',
     'welcome_sign': 'Welcome to the library',
     'copyright': 'Acme Library Ltd',
-    'search_model': ['members.Member', 'auth.Group'],  # 修改此处
+    'search_model': ['members.Member', 'auth.Group'],
     'user_avatar': None,
     'logo_size': {
         'max_width': 150,
@@ -145,16 +143,15 @@ JAZZMIN_SETTINGS = {
     'topmenu_links': [
         {'name': 'Home', 'url': 'admin:index', 'permissions': ['auth.view_user']},
         {'name': 'Support', 'url': 'https://github.com/farridav/django-jazzmin/issues', 'new_window': True},
-        {'model': 'members.Member'},  # 修改此处
-        #{'app': 'books'},
+        {'model': 'members.Member'},
     ],
     'usermenu_links': [
         {'name': 'Support', 'url': 'https://github.com/farridav/django-jazzmin/issues', 'new_window': True},
-        {'model': 'members.Member'}  # 修改此处
+        {'model': 'members.Member'}
     ],
     'show_sidebar': True,
     'navigation_expanded': True,
-    'order_with_respect_to': ['auth', 'books', 'books.author', 'books.book'],
+    'order_with_respect_to': ['auth'],
     'custom_links': {
         'books': [{
             'name': 'Make Messages',
@@ -165,13 +162,13 @@ JAZZMIN_SETTINGS = {
     },
     'icons': {
         'auth': 'fas fa-users-cog',
-        'members.Member': 'fas fa-user',  # 修改此处
+        'members.Member': 'fas fa-user',
         'auth.Group': 'fas fa-users',
     },
     'default_icon_parents': 'fas fa-chevron-circle-right',
     'default_icon_children': 'fas fa-circle',
     'changeform_format': 'horizontal_tabs',
-    'changeform_format_overrides': {'members.Member': 'collapsible', 'auth.group': 'vertical_tabs'},  # 修改此处
+    'changeform_format_overrides': {'members.Member': 'collapsible', 'auth.group': 'vertical_tabs'},
     'language_chooser': True,
 }
 
@@ -181,8 +178,7 @@ LANGUAGES = [
     ('zh-hant', 'Traditional Chinese'),
 ]
 
-# 第三方登入功能
-# 如果你啟用了 allauth，請確保取消下面的註釋
+# 第三方登入功能（如需使用，请取消注释）
 # AUTHENTICATION_BACKENDS = (
 #     'django.contrib.auth.backends.ModelBackend',
 #     'allauth.account.auth_backends.AuthenticationBackend',
@@ -191,14 +187,3 @@ LANGUAGES = [
 # LOGIN_REDIRECT_URL = '/'  # 登入後重定向路徑
 # ACCOUNT_EMAIL_VERIFICATION = 'none'
 # ACCOUNT_EMAIL_REQUIRED = True
-
-
-#配置到heroku
-import dj_database_url
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    # 其他中间件
-]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
