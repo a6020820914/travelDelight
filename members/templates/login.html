@@ -1,0 +1,57 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1726853546092-6a2f2c2cf652?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* 设置背景图片 */
+            background-size: cover;
+            background-position: center;
+        }
+        .login-container {
+            max-width: 400px; /* 最大宽度 */
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9); /* 提高透明度 */
+            padding: 40px; /* 增加内边距 */
+            border-radius: 10px; /* 圆角 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影 */
+            position: relative; /* 使得下面的定位有效 */
+            top: 50px; /* 向下移动 */
+        }
+        h2 {
+            text-align: center; /* 标题居中 */
+        }
+        button {
+            width: 100%; /* 按钮宽度为100% */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>登入</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field|add_class:"form-control" }} <!-- 为每个字段添加 Bootstrap 样式 -->
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">登入</button>
+        </form>
+
+        {% if messages %}
+            <div class="alert alert-info mt-3">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <p>忘記密碼了？<a href="{% url 'password_reset' %}">點此重設密碼</a> / <a href="{% url 'signup' %}">註冊</a></p>
+    </div>
+</body>
+</html>

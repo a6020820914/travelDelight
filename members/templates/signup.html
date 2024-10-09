@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>用戶註冊</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+            body {
+                background-image: url('https://images.unsplash.com/photo-1726853546092-6a2f2c2cf652?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+                background-size: cover;
+                background-position: center;
+            }
+            .signup-container {
+                max-width: 400px;
+                margin: auto;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                margin-top: 50px;
+            }
+            h2 {
+                text-align: center;
+            }
+            .btn-submit {
+                width: 100%;
+                margin-top: 15px;
+            }
+            .error {
+                color: red;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="signup-container">
+            <h2>註冊</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <input type="{{ field.field.widget.type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" placeholder="请输入{{ field.label }}" value="{{ field.value|default:'' }}">
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-submit">註冊</button>
+            </form>
+    
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            <li>{{ field }}: {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </body>
+    </html>
+    

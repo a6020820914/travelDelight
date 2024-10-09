@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to My Site, a place for all your needs">
+    <meta name="keywords" content="My Site, Web, Example">
+    <meta name="author" content="Your Name">
+    
+    <title>{% block title %}My Site{% endblock %}</title>
+
+    <!-- 引入 Bootstrap CDN 和自定义 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Favicon 图标 -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <style>
+        /* 为标题添加渐变背景和调整字体样式 */
+        h1 {
+            background: linear-gradient(to right, rgba(178, 224, 217, 0.9), rgba(75, 155, 119, 0.7)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-family: 'Arial', sans-serif; 
+            font-weight: bold; 
+            font-size: 3rem; 
+            text-shadow: 
+                1px 1px 2px rgba(0, 0, 0, 0.15),
+                -1px -1px 1px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 确保图片大小适中 */
+        .logo {
+            max-width: 150px;
+            height: auto;
+            position: absolute;
+            left: 75px;
+            top: 10px;
+        }
+
+        /* 中间对齐标题 */
+        .header-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* 导航栏样式 */
+        nav.navbar {
+            margin-top: 0;
+        }
+
+        nav ul {
+            list-style: none; /* 移除列表项默认标记 */
+            margin: 0; /* 移除外边距 */
+            padding: 0; /* 移除内边距 */
+            display: flex; /* 使用 Flexbox 排列项目 */
+            justify-content: space-around; /* 水平均匀分布项目 */
+            background-color: #f8f9fa; /* 设置背景颜色 */
+            border-bottom: 2px solid #ccc; /* 底部边框 */
+        }
+
+        nav ul li {
+            margin: 0 15px; /* 设置列表项的左右边距 */
+        }
+
+        nav ul li a {
+            text-decoration: none; /* 移除链接的下划线 */
+            color: #333; /* 设置文字颜色 */
+            font-weight: bold; /* 设置文字为粗体 */
+            transition: color 0.3s; /* 添加颜色变化的过渡效果 */
+        }
+
+        nav ul li a:hover {
+            color: #007bff; /* 悬停时改变文字颜色 */
+        }
+
+        /* 移除不必要的空白间距 */
+        header {
+            padding-bottom: 0; /* 移除header的底部内边距 */
+        }
+
+        nav {
+            margin-bottom: 0; /* 确保导航栏和其他元素之间没有多余的间距 */
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-light py-3 mb-4">
+        <div class="container text-center">
+            <img src="{% static 'travel.wed_logo.png' %}" alt="Logo" class="logo"> <!-- Logo -->
+            <div class="header-container">
+                <h1>Travel Delight</h1>
+            </div>
+            <!-- 导航菜单 -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item"><a class="nav-link" href="/">主頁</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/about">關於我們</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/about">景點介紹</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/about">旅遊行程</a></li>
+                            
+                            <!-- 個人資料下拉菜单 -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    個人資料
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="/members/profile">個人資料</a></li>
+                                    <li><a class="dropdown-item" href="/orders">我的訂單</a></li>
+                                    <li><a class="dropdown-item" href="/favorites">我的收藏</a></li> <!-- 新增“我的收藏”按钮 -->
+                                    {% if user.is_authenticated %}
+                                    <li>
+                                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item">登出</button>
+                                        </form>
+                                    </li>
+                                    {% else %}
+                                    <li><a class="dropdown-item" href="/login">登入</a></li>
+                                    <li><a class="dropdown-item" href="/signup">Sign Up</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 显示消息 -->
+    {% if messages %}
+    <div class="container">
+        <div class="alert alert-success">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <main class="container my-5">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-light text-center py-3">
+        <p>&copy; 2024 Travel Delight Team | All Rights Reserved</p>
+        <p>
+            <a href="#">Privacy Policy</a> | 
+            <a href="#">Terms of Service</a>
+        </p>
+    </footer>
+
+    <!-- 引入 JavaScript 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/custom.js' %}"></script> <!-- 引入你自己的 JavaScript 文件 -->
+</body>
+</html>
